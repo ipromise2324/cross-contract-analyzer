@@ -12,7 +12,7 @@ npm install
 npx hardhat test
 ```
 # List of Past DeFi Incidents
-- 2017/11/6 [Parity - Accidentally Killed It](test/parity_kill.ts)
+- 2017/11/6: [Parity - Accidentally Killed It](test/parity_kill.ts)
 
 
 Try running some of the following test:
