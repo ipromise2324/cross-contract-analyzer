@@ -7,9 +7,9 @@ interface parity {
 
     function kill(address _to) external;
 
-    function initWallet(
-        address[] memory _owners,
-        uint256 _required,
-        uint256 _daylimit
-    ) external;
+    function initWallet(address[] memory _owners, uint256 _required, uint256 _daylimit) external;
+
+    function setDailyLimit(uint _newLimit) external;
+
+    function resetSpentToday() external;
 }

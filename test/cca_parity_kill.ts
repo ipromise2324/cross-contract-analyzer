@@ -21,6 +21,14 @@ describe('CCA Detects Parity Kill Test', async function () {
         return await walletLibrary.kill(address)
     }
 
+    async function setDailyLimit(walletLibrary: Contract, address: string) {
+        return await walletLibrary.setDailyLimit(10)
+    }
+
+    async function resetSpentToday(walletLibrary: Contract, address: string) {
+        return await walletLibrary.resetSpentToday()
+    }
+
     async function checkIncident() {
         let code = await ethers.provider.getCode(walletLibraryAddress)
         let balance = await ethers.provider.getBalance(walletLibraryAddress)
@@ -41,7 +49,7 @@ describe('CCA Detects Parity Kill Test', async function () {
     })
 
     it('should try all function call combinations to kill the wallet', async function () {
-        const actions = [handleIsOwner, handleInitWallet, handleKill]
+        const actions = [setDailyLimit, handleIsOwner, resetSpentToday, handleInitWallet, handleKill]
 
         async function dfs(actionSequence: string[] = [], depth = 0): Promise<boolean> {
             if (depth === actions.length) {
