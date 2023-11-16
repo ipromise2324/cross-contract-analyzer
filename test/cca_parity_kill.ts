@@ -42,27 +42,58 @@ describe('CCA Detects Parity Kill Test', async function () {
 
     it('should try all function call combinations to kill the wallet', async function () {
         const actions = [handleIsOwner, handleInitWallet, handleKill]
-        for (let i = 0; i < actions.length; i++) {
-            for (let j = 0; j < actions.length; j++) {
-                for (let k = 0; k < actions.length; k++) {
-                    let actionBefore = await checkIncident()
-                    if (!actionBefore && i != j && i != k && j != k) {
-                        await actions[i](WalletLibrary, alice.address)
-                        await actions[j](WalletLibrary, alice.address)
-                        await actions[k](WalletLibrary, alice.address)
 
-                        let actionAfter = await checkIncident()
-
-                        if (actionAfter) {
-                            console.log(
-                                `Triggering action sequence: ${actions[i].name} -> ${actions[j].name} -> ${actions[k].name}`,
-                            )
-                            return
-                        }
-                    }
-                }
+        async function dfs(actionSequence: string[] = [], depth = 0): Promise<boolean> {
+            if (depth === actions.length) {
+                return false
             }
+
+            for (let i = depth; i < actions.length; i++) {
+                await actions[i](WalletLibrary, alice.address)
+                actionSequence.push(actions[i].name)
+
+                if (await checkIncident()) {
+                    console.log(`Triggering action sequence: ${actionSequence.join(' -> ')}`)
+                    return true
+                }
+
+                let result = await dfs(actionSequence, depth + 1)
+                if (result) return true
+
+                actionSequence.pop()
+            }
+            return false
         }
-        console.log('No selfdestruct sequence found.')
+
+        let found = await dfs()
+        if (!found) {
+            console.log('No selfdestruct sequence found.')
+        }
     })
 })
+
+// it('should try all function call combinations to kill the wallet', async function () {
+//     const actions = [handleIsOwner, handleInitWallet, handleKill]
+//     for (let i = 0; i < actions.length; i++) {
+//         for (let j = 0; j < actions.length; j++) {
+//             for (let k = 0; k < actions.length; k++) {
+//                 let actionBefore = await checkIncident()
+//                 if (!actionBefore && i != j && i != k && j != k) {
+//                     await actions[i](WalletLibrary, alice.address)
+//                     await actions[j](WalletLibrary, alice.address)
+//                     await actions[k](WalletLibrary, alice.address)
+
+//                     let actionAfter = await checkIncident()
+
+//                     if (actionAfter) {
+//                         console.log(
+//                             `Triggering action sequence: ${actions[i].name} -> ${actions[j].name} -> ${actions[k].name}`,
+//                         )
+//                         return
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     console.log('No selfdestruct sequence found.')
+// })
