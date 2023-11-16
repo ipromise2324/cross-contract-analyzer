@@ -1,4 +1,4 @@
-# Cross Contract Analyzer
+# Cross Contract Analyzer (CCA)
 
 In the current blockchain environment, many tools focus on single smart contract vulnerability detection, but most security issues in the rapidly evolving DeFi sector arise from complex multi-contract interactions. 
 
@@ -12,11 +12,11 @@ npm install
 npx hardhat test
 ```
 # List of Past DeFi Incidents
-- 2017/11/6 Parity - 'Accidentally Killed It' 
+- 2017/11/6 [Parity - Accidentally Killed It](test/parity_kill.ts)
+
 
 Try running some of the following test:
 
 ```shell
 npx hardhat test test/parity_kill.ts 
 ```
-# cross-contract-analyzer
