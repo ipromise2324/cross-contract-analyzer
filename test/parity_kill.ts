@@ -32,7 +32,6 @@ describe('Parity Kill Test', async function () {
     })
 
     it('should accidentally kill it', async function () {
-
         const isOwnerBefore = await WalletLibrary.isOwner(alice.address)
         // Before initWallet, the owner should not be the alice
         expect(isOwnerBefore).to.be.false
@@ -82,7 +81,7 @@ describe('Parity Kill Test', async function () {
     //                         return;
     //                     }
     //                 }
-                    
+
     //             }
     //         }
     //     }

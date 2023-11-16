@@ -4,6 +4,10 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { Contract } from 'ethers'
 
 describe('CCA Detects Parity Kill Test', async function () {
+    let alice: SignerWithAddress
+    let WalletLibrary: Contract
+    let walletLibraryAddress: string
+
     async function handleIsOwner(walletLibrary: Contract, address: string) {
         return await walletLibrary.isOwner(address)
     }
@@ -17,9 +21,14 @@ describe('CCA Detects Parity Kill Test', async function () {
         return await walletLibrary.kill(address)
     }
 
-    let alice: SignerWithAddress
-    let WalletLibrary: Contract
-    let walletLibraryAddress: string
+    async function checkIncident() {
+        let code = await ethers.provider.getCode(walletLibraryAddress)
+        let balance = await ethers.provider.getBalance(walletLibraryAddress)
+        if (code == '0x' && balance == 0n) {
+            return true
+        }
+    }
+
     beforeEach(async () => {
         ;[alice] = await ethers.getSigners()
         WalletLibrary = await ethers.getContractAt('parity', '0x863DF6BFa4469f3ead0bE8f9F2AAE51c91A907b4')
@@ -36,24 +45,21 @@ describe('CCA Detects Parity Kill Test', async function () {
         for (let i = 0; i < actions.length; i++) {
             for (let j = 0; j < actions.length; j++) {
                 for (let k = 0; k < actions.length; k++) {
-                    let code = await ethers.provider.getCode(walletLibraryAddress)
-                    let balance = await ethers.provider.getBalance(walletLibraryAddress)
-                    if (code != '0x' && i != j && i != k && j != k ) {
+                    let actionBefore = await checkIncident()
+                    if (!actionBefore && i != j && i != k && j != k) {
                         await actions[i](WalletLibrary, alice.address)
                         await actions[j](WalletLibrary, alice.address)
                         await actions[k](WalletLibrary, alice.address)
 
-                        code = await ethers.provider.getCode(walletLibraryAddress)
-                        balance = await ethers.provider.getBalance(walletLibraryAddress)
-                        
-                        if (code == '0x' && balance == 0n) {
+                        let actionAfter = await checkIncident()
+
+                        if (actionAfter) {
                             console.log(
                                 `Triggering action sequence: ${actions[i].name} -> ${actions[j].name} -> ${actions[k].name}`,
                             )
-                            return;
+                            return
                         }
                     }
-                    
                 }
             }
         }
