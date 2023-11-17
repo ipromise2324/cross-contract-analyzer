@@ -2,8 +2,12 @@ import { expect } from 'chai'
 import { ethers } from 'hardhat'
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { Contract } from 'ethers'
-import * as parity from './function/parity_function';
+import * as parity from './functions/parity_functions';
+/*
+    https://etherscan.io/tx/0x05f71e1b2cb4f03e547739db15d080fd30c989eda04d37ce6264c5686e0722c9
 
+    https://etherscan.io/tx/0x47f7cff7a5e671884629c93b368cb18f58a993f4b19c2a53a8662e3f1482f690
+*/
 describe('CCA Detects Parity Kill Test', async function () {
     let alice: SignerWithAddress
     let WalletLibrary: Contract
