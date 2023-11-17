@@ -1,37 +1,18 @@
 import { expect } from 'chai'
-import { ethers, network } from 'hardhat'
+import { ethers } from 'hardhat'
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { Contract } from 'ethers'
+import * as parity from './function/parity_function';
 
 describe('CCA Detects Parity Kill Test', async function () {
     let alice: SignerWithAddress
     let WalletLibrary: Contract
     let walletLibraryAddress: string
 
-    async function handleIsOwner(walletLibrary: Contract, address: string) {
-        return await walletLibrary.isOwner(address)
-    }
-
-    async function handleInitWallet(walletLibrary: Contract, address: string) {
-        const ownerArray = [address]
-        return await walletLibrary.initWallet(ownerArray, 0, 0)
-    }
-
-    async function handleKill(walletLibrary: Contract, address: string) {
-        return await walletLibrary.kill(address)
-    }
-
-    async function setDailyLimit(walletLibrary: Contract, address: string) {
-        return await walletLibrary.setDailyLimit(10)
-    }
-
-    async function resetSpentToday(walletLibrary: Contract, address: string) {
-        return await walletLibrary.resetSpentToday()
-    }
-
     async function checkIncident() {
         let code = await ethers.provider.getCode(walletLibraryAddress)
         let balance = await ethers.provider.getBalance(walletLibraryAddress)
+        // If the code is 0x and the balance is 0, then the wallet is killed
         if (code == '0x' && balance == 0n) {
             return true
         }
@@ -49,8 +30,35 @@ describe('CCA Detects Parity Kill Test', async function () {
     })
 
     it('should try all function call combinations to kill the wallet', async function () {
-        const actions = [setDailyLimit, handleIsOwner, resetSpentToday, handleInitWallet, handleKill]
-
+        // If funtion call is view function, then it's priority is lower
+        const actions = [
+            // Non-view functions
+            parity.handleInitWallet,
+            parity.handleAddOwner,
+            parity.handleRemoveOwner,
+            parity.handleKill,
+            parity.handleSetDailyLimit,
+            parity.handleInitDaylimit,
+            parity.handleExecute,
+            parity.handleRevoke,
+            parity.handleChangeRequirement,
+            parity.handleInitMultiowned,
+            parity.handleChangeOwner,
+            parity.handleResetSpentToday,
+        
+            // View functions
+            parity.handleIsOwner,
+            parity.handleNumOwners,
+            parity.handleLastDay,
+            parity.handleSpentToday,
+            parity.handleRequired,
+            parity.handleConfirm, 
+            parity.handleHasConfirmed,
+            parity.handleGetOwner,
+            parity.handleDailyLimit
+        ];
+        
+        // DFS to find the sequence of function calls that will kill the wallet
         async function dfs(actionSequence: string[] = [], depth = 0): Promise<boolean> {
             if (depth === actions.length) {
                 return false
@@ -79,29 +87,3 @@ describe('CCA Detects Parity Kill Test', async function () {
         }
     })
 })
-
-// it('should try all function call combinations to kill the wallet', async function () {
-//     const actions = [handleIsOwner, handleInitWallet, handleKill]
-//     for (let i = 0; i < actions.length; i++) {
-//         for (let j = 0; j < actions.length; j++) {
-//             for (let k = 0; k < actions.length; k++) {
-//                 let actionBefore = await checkIncident()
-//                 if (!actionBefore && i != j && i != k && j != k) {
-//                     await actions[i](WalletLibrary, alice.address)
-//                     await actions[j](WalletLibrary, alice.address)
-//                     await actions[k](WalletLibrary, alice.address)
-
-//                     let actionAfter = await checkIncident()
-
-//                     if (actionAfter) {
-//                         console.log(
-//                             `Triggering action sequence: ${actions[i].name} -> ${actions[j].name} -> ${actions[k].name}`,
-//                         )
-//                         return
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     console.log('No selfdestruct sequence found.')
-// })
