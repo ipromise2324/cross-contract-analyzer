@@ -4,6 +4,8 @@ In the current blockchain environment, many tools focus on single smart contract
 
 To address this, we propose the "Cross Contract Analyzer", a new method that detects security vulnerabilities in multi-contract interactions by combining fuzzing principles with new strategies and technologies, tailored for the complex DeFi ecosystem.
 
+<img src="cca_logo.png" alt="Alt text" width="700" height="auto"/>
+
 # Install
 ```shell
 git clone https://github.com/ipromise2324/cross-contract-analyzer.git
