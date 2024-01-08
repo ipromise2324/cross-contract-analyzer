@@ -51,19 +51,19 @@ describe('CCA Detects Parity Kill Test', async function () {
             parity.handleResetSpentToday,
         
             // View functions
-            parity.handleIsOwner,
-            parity.handleNumOwners,
-            parity.handleLastDay,
-            parity.handleSpentToday,
-            parity.handleRequired,
-            parity.handleConfirm, 
-            parity.handleHasConfirmed,
-            parity.handleGetOwner,
-            parity.handleDailyLimit
+            // parity.handleIsOwner,
+            // parity.handleNumOwners,
+            // parity.handleLastDay,
+            // parity.handleSpentToday,
+            // parity.handleRequired,
+            // parity.handleConfirm, 
+            // parity.handleHasConfirmed,
+            // parity.handleGetOwner,
+            // parity.handleDailyLimit
         ];
         
         // DFS to find the sequence of function calls that will kill the wallet
-        async function dfs(actionSequence: string[] = [], depth = 0): Promise<boolean> {
+        async function cca(actionSequence: string[] = [], depth = 0): Promise<boolean> {
             if (depth === actions.length) {
                 return false
             }
@@ -77,7 +77,7 @@ describe('CCA Detects Parity Kill Test', async function () {
                     return true
                 }
 
-                let result = await dfs(actionSequence, depth + 1)
+                let result = await cca(actionSequence, depth + 1)
                 if (result) return true
 
                 actionSequence.pop()
@@ -85,7 +85,7 @@ describe('CCA Detects Parity Kill Test', async function () {
             return false
         }
 
-        let found = await dfs()
+        let found = await cca()
         if (!found) {
             console.log('No selfdestruct sequence found.')
         }
