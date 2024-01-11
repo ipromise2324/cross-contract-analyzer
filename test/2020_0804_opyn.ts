@@ -1,7 +1,5 @@
 import { ethers } from 'hardhat'
-import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { IERC20 } from '../typechain-types'
-import { Contract } from 'ethers'
 import { expect } from 'chai'
 import { Opyn } from '../typechain-types' // Import the contract that contains the addERC20CollateralOption function
 
