@@ -3,6 +3,7 @@ import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
 import { IERC20 } from '../typechain-types'
 import * as bancorFunctions from './functions/bancor_function'
 import { Contract } from 'ethers'
+import { expect } from 'chai'
 
 describe('CCA Detects Bancor Test', async function () {
     let alice: SignerWithAddress
@@ -18,6 +19,11 @@ describe('CCA Detects Bancor Test', async function () {
 
         XBPTokenAddress = '0x28dee01D53FED0Edf5f6E310BF8Ef9311513Ae40'
         XBPToken = await ethers.getContractAt('IERC20', XBPTokenAddress)
+    })
+
+    it('should block number equal to 10307563', async function () {
+        const blockNumber = await ethers.provider.getBlockNumber()
+        expect(blockNumber).to.equal(10307563)
     })
 
     it('should try to find vulnerability through DFS', async function () {
