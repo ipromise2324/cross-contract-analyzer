@@ -3,7 +3,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
-interface ibancor {
+interface BancorInterface {
     function restrictRegistryUpdate(bool _onlyOwnerCanUpdateRegistry) external;
 
     function registerEtherToken(address _token, bool _register) external;

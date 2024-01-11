@@ -1,16 +1,15 @@
 import { ethers } from 'hardhat'
-import { IERC20 } from '../typechain-types'
+import { IERC20, OpynInterface } from '../typechain-types'
 import { expect } from 'chai'
-import { Opyn } from '../typechain-types' // Import the contract that contains the addERC20CollateralOption function
 
 describe('CCA Detects Opyn Test', async function () {
     let attacker: string
-    let opyn: Opyn
+    let opyn: OpynInterface
     let USDCTokenAddress: string
     let USDCToken: IERC20
 
     beforeEach(async () => {
-        opyn = await ethers.getContractAt('opyn', '0x951D51bAeFb72319d9FBE941E1615938d89ABfe2')
+        opyn = await ethers.getContractAt('OpynInterface', '0x951D51bAeFb72319d9FBE941E1615938d89ABfe2')
         expect(await opyn.getAddress()).to.equal('0x951D51bAeFb72319d9FBE941E1615938d89ABfe2')
         USDCTokenAddress = ethers.getAddress('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
         USDCToken = await ethers.getContractAt('IERC20', USDCTokenAddress)

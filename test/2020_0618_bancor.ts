@@ -15,7 +15,7 @@ describe('CCA Detects Bancor Test', async function () {
 
     beforeEach(async () => {
         ;[alice] = await ethers.getSigners()
-        bancor = await ethers.getContractAt('ibancor', '0x5f58058C0eC971492166763c8C22632B583F667f')
+        bancor = await ethers.getContractAt('BancorInterface', '0x5f58058C0eC971492166763c8C22632B583F667f')
 
         XBPTokenAddress = '0x28dee01D53FED0Edf5f6E310BF8Ef9311513Ae40'
         XBPToken = await ethers.getContractAt('IERC20', XBPTokenAddress)
