@@ -24,7 +24,7 @@ describe('CCA Detects Opyn Test', async function () {
     })
 
     it('should simulate the attack on Opyn', async function () {
-        const attacker = '0xe7870231992Ab4b1A01814FA0A599115FE94203f'
+        attacker = '0xe7870231992Ab4b1A01814FA0A599115FE94203f'
 
         await hre.network.provider.request({
             method: 'hardhat_impersonateAccount',
