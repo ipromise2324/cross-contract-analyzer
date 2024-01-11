@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat'
 import { IERC20, OpynInterface } from '../typechain-types'
 import { expect } from 'chai'
+const hre = require('hardhat')
 
 describe('CCA Detects Opyn Test', async function () {
     let attacker: string
