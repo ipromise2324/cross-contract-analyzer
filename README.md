@@ -12,7 +12,6 @@ git clone https://github.com/ipromise2324/cross-contract-analyzer.git
 cd cross-contract-analyzer
 cp .envExample .env # fill .env file (URL and block number)
 npm install
-npx hardhat test
 ```
 # List of Past DeFi Incidents
 
