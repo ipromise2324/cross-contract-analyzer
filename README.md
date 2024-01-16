@@ -15,16 +15,32 @@ npm install
 npx hardhat test
 ```
 # List of Past DeFi Incidents
+
 - 2017/11/6: [Parity - I Accidentally Killed It](test/parity_kill.ts)
+- 2020/10/26: [Harvest Finance Attack](test/2020_10_26_harvest.ts)
+- 2020/12/29: [Cover Protocol Exploit](test/2020_12_29_cover.ts)
+- 2020/06/18: [Bancor Network Vulnerability](test/2020_0618_bancor.ts)
+- 2020/08/04: [Opyn Attack](test/2020_0804_opyn.ts)
+- 2021/06/07: [88mph Drain](test/2021_06_07_88mph.ts)
+- 2021/09/03: [DaoMaker Exploit](test/2021_09_03_dao_maker.ts)
+- 2021/09/15: [NowSwap Incident](test/2021_09_15_nowswap.ts)
+- DODO Attack: [DODO Exchange Vulnerability](test/dodo_attack.ts)
+- Module Test: [Module Exploit](test/module.ts)
+- Parity Kill: [Parity Multi-Sig Issue](test/parity_kill.ts)
 
+## Simulate the Incidents
 
-Try running some of the following test to simulate the incident:
+Try running some of the following tests to simulate the incidents after you change .env to right block numer:
 
 ```shell
-npx hardhat test test/parity_kill.ts 
-```
-
-Try running some of the following test by using CCA to detect the incident:
-```shell
-npx hardhat test test/cca_parity_kill.ts 
+npx hardhat test test/2020_10_26_harvest.ts
+npx hardhat test test/2020_12_29_cover.ts
+npx hardhat test test/2020_0618_bancor.ts
+npx hardhat test test/2020_0804_opyn.ts
+npx hardhat test test/2021_06_07_88mph.ts
+npx hardhat test test/2021_09_03_dao_maker.ts
+npx hardhat test test/2021_09_15_nowswap.ts
+npx hardhat test test/dodo_attack.ts
+npx hardhat test test/module.ts
+npx hardhat test test/parity_kill.ts
 ```
