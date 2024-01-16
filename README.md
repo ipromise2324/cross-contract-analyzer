@@ -23,9 +23,6 @@ npm install
 - 2021/06/07: [88mph Drain](test/2021_06_07_88mph.ts)
 - 2021/09/03: [DaoMaker Exploit](test/2021_09_03_dao_maker.ts)
 - 2021/09/15: [NowSwap Incident](test/2021_09_15_nowswap.ts)
-- DODO Attack: [DODO Exchange Vulnerability](test/dodo_attack.ts)
-- Module Test: [Module Exploit](test/module.ts)
-- Parity Kill: [Parity Multi-Sig Issue](test/parity_kill.ts)
 
 ## Simulate the Incidents
 
