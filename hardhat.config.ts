@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
     networks: {
         hardhat: {
             forking: {
-                url: eth_url!,
+                url: bsc_url!,
                 blockNumber: parseInt(blockNumber!),
             },
         },
